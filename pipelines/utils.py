@@ -12,6 +12,7 @@ def get_data_for_test():
         data_cleaning = DataCleaning(df, preprocess_strategy)
         df = data_cleaning.handle_data()
         df.drop(["Approved_Conversion"], axis=1, inplace=True)
+        print("df from utils",df)
         result = df.to_json(orient="split")
         return result
     except Exception as e:
