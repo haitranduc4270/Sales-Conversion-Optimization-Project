@@ -22,10 +22,6 @@ from steps.model_train import train_model
 
 docker_settings = DockerSettings(required_integrations=[MLFLOW])
 
-class DeploymentTriggerConfig(BaseParameters):
-    """Parameters that are used to trigger the deployment"""
-    min_accuracy: float = 0
-    
 
 @step(enable_cache=False)
 def dynamic_importer() -> str:
@@ -34,6 +30,10 @@ def dynamic_importer() -> str:
     return data
 
 
+class DeploymentTriggerConfig(BaseParameters):
+    """Parameters that are used to trigger the deployment"""
+    min_accuracy: float = 0
+    
 @step
 def deployment_trigger(
     accuracy: float,
@@ -99,6 +99,7 @@ def prediction_service_loader(
     print(type(existing_services))
     return existing_services[0]
 
+@step
 def predictor(
     service: MLFlowDeploymentService,
     data: str,
@@ -107,7 +108,6 @@ def predictor(
     
     service.start(timeout=10)  # should be a NOP if already started
     data = json.loads(data)
-    print("Here is the data",data)
     data.pop("columns")
     data.pop("index")
     columns_for_df = [
