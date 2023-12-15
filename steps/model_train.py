@@ -4,8 +4,8 @@ import mlflow
 import pandas as pd
 from zenml import step
 
-from src.model_dev import RandomForestModel
-from sklearn.base import BaseEstimator, ClassifierMixin
+from src.model_dev import FCNNModel
+from sklearn.base import BaseEstimator, RegressorMixin
 
 from .config import ModelNameConfig
 
@@ -19,7 +19,7 @@ def train_model(
     y_train: pd.DataFrame,
     y_test: pd.DataFrame,
     config: ModelNameConfig,
-) -> ClassifierMixin:
+) -> RegressorMixin:
     """
     Trains the model on the ingested data.
 
@@ -31,11 +31,12 @@ def train_model(
     """
     try:
         model = None
-        if config.model_name == "RandomForestClassifier":
+        if config.model_name == "FCNN":
             mlflow.sklearn.autolog()
-            model = RandomForestModel()
+            model = FCNNModel()
             trained_model = model.train(X_train, y_train)
             return trained_model
+        
         else:
             raise ValueError("Model {} not supported".format(config.model_name))
     except Exception as e:

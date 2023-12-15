@@ -1,9 +1,11 @@
 import logging 
 from abc import ABC, abstractmethod
 from sklearn.model_selection import GridSearchCV
-
-from sklearn.ensemble import RandomForestClassifier
-
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from sklearn.preprocessing import StandardScaler
+import numpy as np
 
 class Model(ABC):
     """
@@ -21,7 +23,7 @@ class Model(ABC):
         """
         pass
     
-class RandomForestModel(Model):
+class FCNNModel(Model):
     """
     Random Forest model
     """
@@ -36,36 +38,60 @@ class RandomForestModel(Model):
             None
         """
         try:
-            # Define the hyperparameter grid
-            param_grid = {
-                'n_estimators': [100, 150, 200],
-                'max_depth': [None,10, 20, 30],
-                'min_samples_split': [2, 5, 10,15],
-                'min_samples_leaf': [1, 2, 4,8]
-                # Add other hyperparameters as needed
-            }
+            # Define the CNN model architecture
+            class FCNN(nn.Module):
+                def __init__(self, input_size, hidden_size,output_size, **kwargs):
+                    super(FCNN, self).__init__()
+                    # Define your CNN layers here
 
-            # Create a RandomForestClassifier
-            rf_model = RandomForestClassifier(random_state=42)
+                    # Example architecture
+                    self.fc1 = nn.Linear(input_size, hidden_size)
+                    self.relu = nn.ReLU()
+                    self.fc2 = nn.Linear(hidden_size, output_size)
 
-            # Create a GridSearchCV object
-            grid_search = GridSearchCV(rf_model, param_grid, cv=5, scoring='accuracy', verbose=2, n_jobs=-1)
+                def forward(self, x):
+                    out = self.fc1(x)
+                    out = self.relu(out)
+                    out = self.fc2(out)
+                    return out
 
-            # Fit the GridSearchCV object to the training data
-            grid_search.fit(X_train, y_train)
+            # Define the hyperparameters
+            input_size = X_train.shape[1]
+            hidden_size = 73
+            output_size = 1
+            learning_rate = 0.001
+            num_epochs = 900
 
-            # Get the best hyperparameters
-            best_params = grid_search.best_params_
+            # Instantiate the CNN model
+            model = FCNN(input_size, hidden_size, output_size)
 
-            # Use the best hyperparameters to create the final model
-            best_rf_model = RandomForestClassifier(**best_params, random_state=42)
+            # Define the loss function and optimizer
+            criterion = nn.MSELoss()
+            optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-            # Train the model on the entire training data
-            best_rf_model.fit(X_train, y_train)
-                        
-            logging.info("Model training completed")
+
+            X_train_np = X_train.to_numpy()  # Convert X_train to NumPy array
+            y_train_np = y_train.to_numpy()
             
-            return best_rf_model
+            # Convert X_train and y_train to PyTorch tensors if not already
+            X_train_tensor = torch.tensor(X_train_np, dtype=torch.float32)
+            y_train_tensor = torch.tensor(y_train_np, dtype=torch.float32)  # Assuming y_train contains class indices
+
+            # Training loop
+
+            for epoch in range(num_epochs):
+                # Forward pass
+                outputs = model(X_train_tensor)
+                loss = criterion(outputs, y_train_tensor)
+
+                # Backward and optimize
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            # Return the trained CNN model
+            return model
+
         except Exception as e:
-            logging.error("Error in training model: {}".format(e))
-            raise e    
+            logging.error("Error in training FCNN model: {}".format(e))
+            raise e

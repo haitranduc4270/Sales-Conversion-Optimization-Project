@@ -1,72 +1,60 @@
 import logging
-from typing import Tuple
 
 import mlflow
+import numpy as np
 import pandas as pd
-from sklearn.base import BaseEstimator, ClassifierMixin
+from src.evaluation import MSE, RMSE, R2Score
+from sklearn.base import RegressorMixin
 from typing_extensions import Annotated
 from zenml import step
 from zenml.client import Client
-from src.evaluation import Accuracy, Conf_matrix,ROC, Precision, Recall, F1_Score
-
 
 experiment_tracker = Client().active_stack.experiment_tracker
+from typing import Tuple
+
 
 @step(experiment_tracker=experiment_tracker.name)
-def evaluate_model(model: ClassifierMixin,
-    X_test: pd.DataFrame,
-    y_test: pd.DataFrame,
-) -> Tuple[
-    Annotated[float, "accuracy"],
-    # Annotated[int, "confusion_matrix"],
-    Annotated[float, "precision"],
-    Annotated[float, "recall"],
-    Annotated[float, "f1score"],
-    Annotated[float, "roc-auc"],
-    ]:
+def evaluate_model(
+    model: RegressorMixin, x_test: pd.DataFrame, y_test: pd.Series
+) -> Tuple[Annotated[float, "r2_score"], Annotated[float, "rmse"]]:
+
     """
-    Evaluate the model on the ingested data.
     Args:
-        df: the ingested data
+        model: RegressorMixin
+        x_test: pd.DataFrame
+        y_test: pd.Series
+    Returns:
+        r2_score: float
+        rmse: float
     """
     try:
-        prediction = model.predict(X_test)
-        
-        accuracy_class = Accuracy()
-        accuracy = accuracy_class.calculate_scores(y_test, prediction)
-        mlflow.log_metric("Accuracy", accuracy)
+        # prediction = model.predict(x_test)
+        # evaluation = Evaluation()
+        # r2_score = evaluation.r2_score(y_test, prediction)
+        # mlflow.log_metric("r2_score", r2_score)
+        # mse = evaluation.mean_squared_error(y_test, prediction)
+        # mlflow.log_metric("mse", mse)
+        # rmse = np.sqrt(mse)
+        # mlflow.log_metric("rmse", rmse)
 
+        prediction = model.predict(x_test)
 
-        # conf_matrix_class = Conf_matrix()
-        # conf_matrix = conf_matrix_class.calculate_scores(y_test, prediction)
-        # mlflow.log_metric("Confusion Matrix", conf_matrix)
-        
-        precision_class = Precision()
-        precision = precision_class.calculate_scores(y_test,prediction)
-        mlflow.log_metric("Precision", precision)
-        
-        
-        recall_class = Recall()
-        recall = recall_class.calculate_scores(y_test,prediction)
-        mlflow.log_metric("Recall", recall)
-        
-        
-        F1_class = F1_Score()
-        f1score = F1_class.calculate_scores(y_test,prediction)
-        mlflow.log_metric("F1_Score",f1score)
-        
-        
-        # mlflow.log_metric("Recall", recall)
-        # mlflow.log_metric("F1-Score", f1)
-        # Log other metrics as needed
+        # Using the MSE class for mean squared error calculation
+        mse_class = MSE()
+        mse = mse_class.calculate_score(y_test, prediction)
+        mlflow.log_metric("mse", mse)
 
-  
-        roc_auc_class = ROC()
-        roc_auc= roc_auc_class.calculate_scores(y_test, prediction)
-        mlflow.log_metric("ROC-AUC score", roc_auc)
+        # Using the R2Score class for R2 score calculation
+        r2_class = R2Score()
+        r2_score = r2_class.calculate_score(y_test, prediction)
+        mlflow.log_metric("r2_score", r2_score)
 
-
-        return accuracy, precision, recall, f1score, roc_auc
+        # Using the RMSE class for root mean squared error calculation
+        rmse_class = RMSE()
+        rmse = rmse_class.calculate_score(y_test, prediction)
+        mlflow.log_metric("rmse", rmse)
+        
+        return r2_score, rmse
     except Exception as e:
-        logging.error("Error in evaluating model: {}".format(e))
+        logging.error(e)
         raise e

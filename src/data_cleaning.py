@@ -2,8 +2,6 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Union
 from sklearn.preprocessing import LabelEncoder 
-from imblearn.under_sampling import RandomUnderSampler
-
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -28,61 +26,33 @@ class DataPreProcessStrategy(DataStrategy):
         Preprocess data
         """
         try:
-            for col in data.select_dtypes(include=[np.number]).columns:
-                cols_with_outliers = []
-                q1 = data[col].quantile(0.25)
-                q3 = data[col].quantile(0.75)
-                iqr = q3 - q1
-                lower_bound = q1 - 1.5 * iqr
-                upper_bound = q3 + 1.5 * iqr
+            # Example preprocessing steps, modify as needed
+            value_counts = data['interest'].value_counts()
+            total_count = value_counts.sum()
+            cum_count = 0
+            keep_values = []
 
-                total_outliers = ((data[col] < lower_bound) | (data[col] > upper_bound)).sum()
-                if total_outliers > 0:
-                    cols_with_outliers.append(col)
-                print(f'{col} has total outliers: ', total_outliers)
-            
-            # Replace outliers
-                data[col] = data[col].clip(lower=lower_bound, upper=upper_bound)
-                
-            # Apply one-hot encoding for gender
-            #data = pd.get_dummies(data, columns=['gender'], prefix='gender', drop_first=True)
-            #data['gender_M'] = data['gender_M'].astype(int)
-             
-                 
-            # Apply one-hot encoding for gender
-            data = pd.get_dummies(data, columns=['gender'], prefix='gender', drop_first=True)
-            data['gender_M'] = data['gender_M'].astype(int) 
-                 
-                
-                # Label encode age
-            le = LabelEncoder()
-            data['age_encoded'] = le.fit_transform(data['age']) 
-            
-            # for col in data:
-            #     cols_with_outliers = []
-            #     q1 = data[col].quantile(0.25)
-            #     q3 = data[col].quantile(0.75)
-            #     iqr = q3 - q1
-            #     lower_bound = q1 - 1.5 * iqr
-            #     upper_bound = q3 + 1.5 * iqr
+            for value, count in value_counts.items():
+                cum_count += count
+                if cum_count / total_count <= 0.8:
+                    keep_values.append(value)
+                else:
+                    break
 
-            #     total_outliers = ((data[col] < lower_bound) | (data[col] > upper_bound)).sum()
-            #     if total_outliers > 0:
-            #         cols_with_outliers.append(col)
-            #     print(f'{col} has total outliers: ', total_outliers)
-            
-            #     # Replace outliers
-            #     data[col] = data[col].clip(lower=lower_bound, upper=upper_bound)
-            
-            # Feature engineering
-            data['Approved_Conversion'] = data['Approved_Conversion'].apply(lambda x: 1 if x > 0 else 0)
-            data['spent_clicks_campaign_interaction'] = data['Spent'] * data['Clicks'] * data['xyz_campaign_id']
-            data['spent_clicks_age_interaction'] = data['Spent'] * data['Clicks'] * data['age_encoded']
-            data['spent_clicks_interest_interaction'] = data['Spent'] * data['Clicks'] * data['interest']
-            data['spent_per_click'] = data['Spent'] / (data['Clicks'] + 1)
-            # Drop unnecessary columns
-            columns_to_drop = [ 'age' , 'xyz_campaign_id', 'ad_id', 'fb_campaign_id','Impressions', 'Spent', 'Clicks']
-            data = data.drop(columns=columns_to_drop,axis=1)
+            data['pareto_interest'] = data['interest'].apply(lambda x: x if x in keep_values else 'other')
+
+            data['conv1'] = np.where(data['Total_Conversion'] != 0, 1, 0)
+            data['conv2'] = np.where(data['Approved_Conversion'] != 0, 1, 0)
+
+            columns_to_one_hot_encode = ['pareto_interest', 'xyz_campaign_id', 'gender', 'age']
+
+            data_dummies = pd.get_dummies(data[columns_to_one_hot_encode], prefix='', prefix_sep='')
+            boolean_columns = data_dummies.select_dtypes(include='bool').columns
+            data_dummies[boolean_columns] = data_dummies[boolean_columns].astype(int)
+            data = pd.concat([data, data_dummies], axis=1)
+
+            data = data.drop(['age', 'gender', 'xyz_campaign_id', 'fb_campaign_id', 'interest', 'pareto_interest'],
+                             axis=1).set_index('ad_id')
             return data
         except Exception as e:
             logging.error("Error in preprocessing data: {}".format(e))
@@ -100,12 +70,13 @@ class DataDivideStrategy(DataStrategy):
         Divides the data into train and test data
         """
         try:
-            X = data.drop("Approved_Conversion", axis=1)
-            y = data["Approved_Conversion"]
-            # Apply undersampling
-            under_sampler = RandomUnderSampler(random_state=42)
-            X_resampled, y_resampled = under_sampler.fit_resample(X, y)
-            X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
+            # Prepare the data
+            X = data.drop(['Total_Conversion', 'Approved_Conversion', 'conv1', 'conv2'], axis=1) 
+            y = data['Total_Conversion']
+            print(type(X))
+            print(type(y))
+            # Perform train-test split
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
             return X_train, X_test, y_train, y_test
         except Exception as e:
             logging.error("Error in dividing data: {}".format(e))
