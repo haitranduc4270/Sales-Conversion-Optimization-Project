@@ -2,112 +2,88 @@ import logging
 from abc import ABC, abstractmethod
 
 import numpy as np
-
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_auc_score,precision_score,recall_score,f1_score
+from sklearn.metrics import mean_squared_error, r2_score
 
 
 class Evaluation(ABC):
     """
-    Abstract class defining strategy for evaluation our model
+    Abstract Class defining the strategy for evaluating model performance
     """
-
     @abstractmethod
-    def calculate_scores(self, y_true: np.ndarray, y_pred: np.ndarray):
-        """
-        Calculates scores for the model
-        Args:
-            y_true: True labels
-            y_pred: Predicted labels
-        Returns:
-            None
-        """
+    def calculate_score(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         pass
-    
-    
-class Accuracy(Evaluation):
+
+
+class MSE(Evaluation):
     """
-    Evaluation Strategy that uses Mean Squared Error
+    Evaluation strategy that uses Mean Squared Error (MSE)
     """
-    def calculate_scores(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def calculate_score(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
+        """
+        Args:
+            y_true: np.ndarray
+            y_pred: np.ndarray
+        Returns:
+            mse: float
+        """
         try:
-            logging.info("Calculating Accuracy")
-            accuracy = accuracy_score(y_true, y_pred)
-            logging.info("Accuracy: {}".format(accuracy))
-            return accuracy
+            logging.info("Entered the calculate_score method of the MSE class")
+            mse = mean_squared_error(y_true, y_pred)
+            logging.info("The mean squared error value is: " + str(mse))
+            return mse
         except Exception as e:
-            logging.error("Error in calculating Accuracy: {}".format(e))
+            logging.error(
+                "Exception occurred in calculate_score method of the MSE class. Exception message:  "
+                + str(e)
+            )
             raise e
-        
 
-class Conf_matrix(Evaluation):
+
+class R2Score(Evaluation):
     """
-    Evaluation Strategy that uses Mean Squared Error
+    Evaluation strategy that uses R2 Score
     """
-    def calculate_scores(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def calculate_score(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
+        """
+        Args:
+            y_true: np.ndarray
+            y_pred: np.ndarray
+        Returns:
+            r2_score: float
+        """
         try:
-            logging.info("Calculating Confusion Matrix")
-            conf_matrix = confusion_matrix(y_true, y_pred)
-            logging.info("Confusion Matrix: {}".format(conf_matrix))
-            return conf_matrix
+            logging.info("Entered the calculate_score method of the R2Score class")
+            r2 = r2_score(y_true, y_pred)
+            logging.info("The r2 score value is: " + str(r2))
+            return r2
         except Exception as e:
-            logging.error("Error in calculating Confusion Matrix: {}".format(e))
+            logging.error(
+                "Exception occurred in calculate_score method of the R2Score class. Exception message:  "
+                + str(e)
+            )
             raise e
-        
-        
-class Precision(Evaluation):
-    """
-    Evaluation Strategy that uses Mean Squared Error
-    """
-    def calculate_scores(self, y_true: np.ndarray, y_pred: np.ndarray):
-        try:
-            logging.info("Calculating Precision Score")
-            precision = precision_score(y_true, y_pred)
-            logging.info("Precision Score: {}".format(precision))
-            return precision
-        except Exception as e:
-            logging.error("Error in calculating Precision: {}".format(e))
-            raise 
-        
-class Recall(Evaluation):
-    """
-    Evaluation Strategy that uses Mean Squared Error
-    """
-    def calculate_scores(self, y_true: np.ndarray, y_pred: np.ndarray):
-        try:
-            logging.info("Calculating Recall")
-            recall = recall_score(y_true, y_pred)
-            logging.info("Recall: {}".format(recall))
-            return recall
-        except Exception as e:
-            logging.error("Error in calculating Recall: {}".format(e))
-            raise 
 
 
-class F1_Score(Evaluation):
+class RMSE(Evaluation):
     """
-    Evaluation Strategy that uses Mean Squared Error
+    Evaluation strategy that uses Root Mean Squared Error (RMSE)
     """
-    def calculate_scores(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def calculate_score(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
+        """
+        Args:
+            y_true: np.ndarray
+            y_pred: np.ndarray
+        Returns:
+            rmse: float
+        """
         try:
-            logging.info("Calculating F1 Score")
-            f1score= f1_score(y_true, y_pred)
-            logging.info("F1_Score: {}".format(f1score))
-            return f1score
+            logging.info("Entered the calculate_score method of the RMSE class")
+            rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+            logging.info("The root mean squared error value is: " + str(rmse))
+            return rmse
         except Exception as e:
-            logging.error("Error in calculating F1_Score: {}".format(e))
-            raise 
-                
-  
-class ROC(Evaluation):
-    """
-    Evaluation Strategy that uses Mean Squared Error
-    """
-    def calculate_scores(self, y_true: np.ndarray, y_pred: np.ndarray):
-        try:
-            logging.info("Calculating ROC-AUC")
-            roc = roc_auc_score(y_true, y_pred)
-            logging.info("ROC-AUC: {}".format(roc))
-            return roc
-        except Exception as e:
-            logging.error("Error in calculating ROC-AUC: {}".format(e))
+            logging.error(
+                "Exception occurred in calculate_score method of the RMSE class. Exception message:  "
+                + str(e)
+            )
             raise e

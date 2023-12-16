@@ -6,12 +6,12 @@ from src.data_cleaning import DataCleaning, DataPreProcessStrategy
 
 def get_data_for_test():
     try:
-        df = pd.read_csv("/home/miniuser/MLOPS/Sales-Conversion-Optimization-Project/data/raw/KAG_conversion_data.csv", encoding='iso-8859-1')
+        df = pd.read_csv("/home/miniuser/MLOPS/Sales-Conversion-Optimization-Project/data/raw/KAG_conversion_data.csv")
         df = df.sample(n=100)
         preprocess_strategy = DataPreProcessStrategy()
         data_cleaning = DataCleaning(df, preprocess_strategy)
         df = data_cleaning.handle_data()
-        df.drop(["Approved_Conversion"], axis=1, inplace=True)
+        df.drop(["Total_Conversion"], axis=1, inplace=True)
         print("df from utils",df)
         result = df.to_json(orient="split")
         return result
