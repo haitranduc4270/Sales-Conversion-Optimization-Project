@@ -5,7 +5,7 @@ from steps.model_train import train_model
 from steps.evaluate_step import evaluate_model
 
 
-@pipeline(enable_cache=True)
+@pipeline(enable_cache=False)
 def training_pipeline(data_path: str):
     df = ingest_df(data_path)
     X_train, X_test, y_train, y_test = clean_df(df)

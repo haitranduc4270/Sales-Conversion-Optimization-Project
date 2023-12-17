@@ -2,9 +2,9 @@ import logging
 
 import mlflow
 import pandas as pd
+from sklearn.ensemble import GradientBoostingRegressor
 from zenml import step
 
-from src.model_dev import FCNNModel
 from sklearn.base import BaseEstimator, RegressorMixin
 
 from .config import ModelNameConfig
@@ -31,10 +31,12 @@ def train_model(
     """
     try:
         model = None
-        if config.model_name == "FCNN":
+        if config.model_name == "GradientBoostingRegressor":
             mlflow.sklearn.autolog()
-            model = FCNNModel()
-            trained_model = model.train(X_train, y_train)
+            model = GradientBoostingRegressor()
+            model.fit(X_train, y_train)
+            trained_model = model  # Assuming the model itself is modified in-place during training
+
             return trained_model
         
         else:
