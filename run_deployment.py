@@ -45,7 +45,7 @@ def main(config: str, min_accuracy: float):
         # Initialize a continuous deployment pipeline run
          
         continuous_deployment_pipeline(
-            data_path ="/home/dhruba/team_project/Sales-Conversion-Optimization-Project/data/raw/KAG_conversion_data.csv",
+            data_path ="/home/miniuser/MLOPS/Sales-Conversion-Optimization-Project/data/raw/KAG_conversion_data.csv",
             min_accuracy=min_accuracy,
             workers=3,
             timeout=10,

@@ -49,6 +49,7 @@ class DataPreProcessStrategy(DataStrategy):
             data_dummies = pd.get_dummies(data[columns_to_one_hot_encode], prefix='', prefix_sep='')
             boolean_columns = data_dummies.select_dtypes(include='bool').columns
             data_dummies[boolean_columns] = data_dummies[boolean_columns].astype(int)
+            data_dummies = data_dummies[sorted(data_dummies.columns)]
             data = pd.concat([data, data_dummies], axis=1)
 
             data = data.drop(['age', 'gender', 'xyz_campaign_id', 'fb_campaign_id', 'interest', 'pareto_interest'],

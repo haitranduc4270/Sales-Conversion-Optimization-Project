@@ -4,7 +4,7 @@ from pipelines.training_pipeline import training_pipeline
 from zenml.integrations.mlflow.mlflow_utils import get_tracking_uri
 
 if __name__ == "__main__":
-    training_pipeline(data_path = "/home/dhruba/team_project/Sales-Conversion-Optimization-Project/data/raw/KAG_conversion_data.csv")
+    training_pipeline(data_path = "/home/miniuser/MLOPS/Sales-Conversion-Optimization-Project/data/raw/KAG_conversion_data.csv")
     
 
    

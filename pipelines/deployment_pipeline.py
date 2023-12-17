@@ -110,14 +110,15 @@ def predictor(
     data = json.loads(data)
     data.pop("columns")
     data.pop("index")
+    print(data)
     columns_for_df = [
-        'ad_id', 'xyz_campaign_id', 'fb_campaign_id', 'age', 'gender',
-       'interest', 'Impressions', 'Clicks', 'Spent', 'pareto_interest', 'conv1', 'conv2',
-       'xyz_campaign_id', '10', '15', '16', '18', '19', '20', '21', '22', '25',
-       '26', '27', '28', '29', '30', '31', '32', '63', '64', 'other', 'F', 'M',
-       '30-34', '35-39', '40-44', '45-49'
+        'Impressions', 'Clicks', 'Spent', 
+       'Approved_Conversion', '10', '15', '16', '18', '19',
+       '20', '21', '22', '25', '26', '27', '28', '29', '30', '31', '32', '63',
+       '64', 'other', 'F', 'M', '30-34', '35-39', '40-44', '45-49'
     ]
     df = pd.DataFrame(data["data"], columns=columns_for_df)
+    print(df)
     json_list = json.loads(json.dumps(list(df.T.to_dict().values())))
     data = np.array(json_list)
     prediction = service.predict(data)
@@ -135,7 +136,7 @@ def continuous_deployment_pipeline(
     df = ingest_df(data_path)
     X_train, X_test, y_train, y_test = clean_df(df)
     model = train_model(X_train, X_test, y_train, y_test)
-    mse,r2_score,rmse= evaluate_model(model, X_test, y_test)
+    mse,rmse= evaluate_model(model, X_test, y_test)
     deployment_decision = deployment_trigger(mse)
     mlflow_model_deployer_step(
         model=model,
