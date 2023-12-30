@@ -110,15 +110,12 @@ def predictor(
     data = json.loads(data)
     data.pop("columns")
     data.pop("index")
-    print(data)
-    columns_for_df = [
-        'Impressions', 'Clicks', 'Spent', 
-       'Approved_Conversion', '10', '15', '16', '18', '19',
-       '20', '21', '22', '25', '26', '27', '28', '29', '30', '31', '32', '63',
-       '64', 'other', 'F', 'M', '30-34', '35-39', '40-44', '45-49'
-    ]
+    columns_for_df = ['interest', 'Impressions', 'Clicks', 'Spent', 'Total_Conversion',
+        'campaign_936', 'campaign_1178', 'Age_Group',
+       'Gender_Code', 'Interaction_Imp_Clicks', 'Spent_per_Click',
+       'Total_Conversion_Rate', 'Budget_Allocation_Imp', 'CTR',
+       'Conversion_per_Impression']
     df = pd.DataFrame(data["data"], columns=columns_for_df)
-    print(df)
     json_list = json.loads(json.dumps(list(df.T.to_dict().values())))
     data = np.array(json_list)
     prediction = service.predict(data)
