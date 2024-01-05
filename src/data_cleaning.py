@@ -5,6 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
 
 class DataStrategy(ABC):
     """
@@ -15,48 +16,85 @@ class DataStrategy(ABC):
     def handle_data(self, data: pd.DataFrame) -> Union[pd.DataFrame, pd.Series]:
         pass  
     
-    
+
 class DataPreProcessStrategy(DataStrategy):
     """
     Strategy for preprocessing data
     """
 
-    def handle_data(self, data: pd.DataFrame) -> pd.DataFrame:
+    def handle_data(self, data: pd.DataFrame, use_filtered_data: bool = False) -> pd.DataFrame:
         """
         Preprocess data
         """
         try:
-            # Example preprocessing steps, modify as needed
-            value_counts = data['interest'].value_counts()
-            total_count = value_counts.sum()
-            cum_count = 0
-            keep_values = []
+            # Drop unnecessary columns
+            data.drop(['ad_id', 'fb_campaign_id'], axis=1, inplace=True)
 
-            for value, count in value_counts.items():
-                cum_count += count
-                if cum_count / total_count <= 0.8:
-                    keep_values.append(value)
-                else:
-                    break
+            # Define the age groups
+            age_groups = ['30-34', '35-39', '40-44', '45-49']
 
-            data['pareto_interest'] = data['interest'].apply(lambda x: x if x in keep_values else 'other')
+            # One-hot encode 'xyz_campaign_id'
+            data = pd.get_dummies(data, columns=['xyz_campaign_id'], prefix='campaign', drop_first=True)
 
-            data['conv1'] = np.where(data['Total_Conversion'] != 0, 1, 0)
-            data['conv2'] = np.where(data['Approved_Conversion'] != 0, 1, 0)
+            # Initialize the label encoder for 'age'
+            label_encoder = LabelEncoder()
+            data['Age_Group'] = label_encoder.fit_transform(data['age'])
 
-            columns_to_one_hot_encode = ['pareto_interest', 'xyz_campaign_id', 'gender', 'age']
+            # Gender encoding
+            data['Gender_Code'] = data['gender'].map({'F': 0, 'M': 1})
 
-            data_dummies = pd.get_dummies(data[columns_to_one_hot_encode], prefix='', prefix_sep='')
-            boolean_columns = data_dummies.select_dtypes(include='bool').columns
-            data_dummies[boolean_columns] = data_dummies[boolean_columns].astype(int)
-            data = pd.concat([data, data_dummies], axis=1)
+            # Interaction Features
+            data['Interaction_Imp_Clicks'] = data['Impressions'] * data['Clicks']
 
-            data = data.drop(['age', 'gender', 'xyz_campaign_id', 'fb_campaign_id', 'interest', 'pareto_interest'],
-                             axis=1).set_index('ad_id')
-            return data
+            # Spent per Click
+            data['Spent_per_Click'] = data['Spent'] / data['Clicks']
+
+            # Total Conversion Rate
+            data['Total_Conversion_Rate'] = data['Total_Conversion'] / data['Clicks']
+
+            # Budget Allocation
+            data['Budget_Allocation_Imp'] = data['Spent'] / data['Impressions']
+
+            # Ad Performance Metrics
+            data['CTR'] = data['Clicks'] / data['Impressions']
+            data['Conversion_per_Impression'] = data['Total_Conversion'] / data['Impressions']
+
+            # Drop unnecessary columns
+            data.drop(['age', 'gender'], axis=1, inplace=True)
+
+            # Threshold for correlation
+            threshold = 0.95
+            correlation_matrix = data.corr()
+
+            # Find and drop highly correlated features
+            highly_correlated = (correlation_matrix.abs() >= threshold).sum()
+            highly_correlated = highly_correlated[highly_correlated > 1].index
+
+            data_filtered = data.drop(columns=highly_correlated)
+
+            # Fill NaN values with 0
+            data.fillna(0, inplace=True)
+
+            # Check for infinite values in the DataFrame
+            is_inf = np.isinf(data)
+
+            # Replace infinite values with NaN
+            data.replace([np.inf, -np.inf], np.nan, inplace=True)
+
+            # Check for infinite values in the DataFrame
+            is_inf = np.isinf(data)
+            original_data = data.copy()
+            imputer = SimpleImputer(strategy='mean')
+            data = imputer.fit_transform(data)
+            data = pd.DataFrame(data )
+            data.columns = original_data.columns
+            print(use_filtered_data)
+            return data_filtered if use_filtered_data else data
+
         except Exception as e:
             logging.error("Error in preprocessing data: {}".format(e))
             raise e
+
             
 
  
@@ -71,10 +109,8 @@ class DataDivideStrategy(DataStrategy):
         """
         try:
             # Prepare the data
-            X = data.drop(['Total_Conversion', 'Approved_Conversion', 'conv1', 'conv2'], axis=1) 
-            y = data['Total_Conversion']
-            print(type(X))
-            print(type(y))
+            X = data.drop(['Approved_Conversion'], axis=1) 
+            y = data['Approved_Conversion']
             # Perform train-test split
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
             return X_train, X_test, y_train, y_test

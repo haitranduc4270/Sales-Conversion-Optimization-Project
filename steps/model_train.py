@@ -3,6 +3,7 @@ import logging
 import mlflow
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
 from zenml import step
 
 from sklearn.base import BaseEstimator, RegressorMixin
@@ -31,9 +32,9 @@ def train_model(
     """
     try:
         model = None
-        if config.model_name == "GradientBoostingRegressor":
+        if config.model_name == "LinearRegression":
             mlflow.sklearn.autolog()
-            model = GradientBoostingRegressor()
+            model = LinearRegression()
             model.fit(X_train, y_train)
             trained_model = model  # Assuming the model itself is modified in-place during training
 
