@@ -23,7 +23,7 @@ The dataset, [conversion_data.csv](https://www.kaggle.com/datasets/loveall/click
 - Spent: Amount paid by company XYZ to Facebook for the ad.
 - Total conversion: Total number of inquiries about the product after seeing the ad.
 - Approved conversion: Total number of product purchases after seeing the ad.
-![Alt text](DE.png)
+![!\[Alt text\](DE.png)](images/DE.png)
 
 
 #### Data Cleaning and Preprocessing
