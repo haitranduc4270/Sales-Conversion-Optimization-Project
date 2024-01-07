@@ -28,8 +28,12 @@ The dataset, [conversion_data.csv](https://www.kaggle.com/datasets/loveall/click
 
 #### Data Cleaning and Preprocessing
 
-Cleaned and preprocessed the dataset for analysis, identifying and handling missing or inconsistent data. Used the Facade design pattern for data preprocessing:
+Cleaned and preprocessed the dataset for analysis, identifying and handling missing or inconsistent data. 
+However the data contanin 0 duplicate value. Then we checked the outliears 
+![Alt text](outL.png)
 
+Used the Facade design pattern for data preprocessing:
+We used our favorite design pattern to match the coding style of our teammate and the pattern is the Facade design pattern.
 ```python
 # Facade design pattern for data preprocessing
 class DataPreProcessStrategy(DataStrategy):
@@ -45,6 +49,10 @@ class DataCleaning:
 ### 2. Exploratory Data Analysis (EDA)
 
 Performed statistical analysis to understand distributions and relationships, visualized key metrics, and trends in the data. Various exploratory data analysis techniques were employed, including Box plot, Pair plot, and Correlation Matrix heatmap.
+![Alt text](BOx.png)
+![Alt text](PAIR.png)
+![Alt text](HEAT.png)
+
 
 ### 3. Feature Engineering
 
@@ -55,28 +63,46 @@ Implemented feature engineering to create new features that might improve model 
 Developed machine learning models, including GradientBoostingModel, LinearRegressionModel, AdaBoostRegressorModel, RandomForestRegressorModel, and planned to add more models over time. Evaluated model performance using metrics like R2 Score, RMSE, etc.
 
 ### 5. MLOps Integration
-
 #### Version Control and Collaboration
 
-Utilized Git and GitHub for version control and collaboration, enabling multiple team members to work on the project simultaneously. This streamlined collaboration, enhanced version control, and provided a centralized platform for project management.
+##### Git and GitHub Integration
 
-![Git1](Git1 pic link)
-![Git2](Git2 pic link)
+We have implemented a robust version control system for our code and data using Git and GitHub. Git facilitates version control, allowing multiple team members to work on the project simultaneously. It effectively tracks changes, making it easy to revert to previous versions if needed. GitHub, serving as a centralized platform, enables seamless collaboration, allowing team members to push, pull, and merge changes. This ensures everyone is consistently working with the latest codebase.
 
-#### Automated Training and Deployment Pipelines
+![Alt text](git.png)
+![Alt text](git2.png)
 
-Streamlined the model development process using ZenML and MLflow for automated training and deployment pipelines. ZenML organized and managed machine learning workflows, while MLflow automated model training and deployment steps. This setup facilitated experimentation with different models, tracking their performance, and deploying the best-performing ones effortlessly.
+The utilization of Git and GitHub not only streamlines collaboration but also enhances version control, providing a centralized platform for project management. This approach ultimately improves the efficiency and organization of our team projects.
 
-![ZenML Dashboard](RUN pic link)
-![ZenML DAG Visualizer](1pic link)
-![MLflow Artifacts](MLflow pic link)
+### Automated Model Training and Deployment
 
-#### Communication and Project Organization
+In our project, we've automated the model development process by leveraging ZenML and MLflow for efficient training and deployment pipelines. ZenML assists in organizing and managing machine learning workflows, simplifying the tracking and reproduction of experiments. MLflow automates model training and deployment steps, ensuring a seamless and efficient pipeline.
 
-Utilized Discord for seamless and real-time team interaction and Notion for creating a structured timeline and tracking project-related tasks. This combination ensured effective communication and project organization within the team.
+This setup allows us to experiment with different models, track their performance, and effortlessly deploy the best-performing ones. The integration of ZenML and MLflow has significantly simplified our workflow, making it more manageable and reproducible for future iterations of our project.
 
-![Discord](Discord pic link)
-![Notion Roles](Role pic link)
-![Notion Timeline](Timeline pic link)
+#### ZenML Dashboard and Visualizer
+
+Here you can view all our runs in the ZenML Dashboard, providing comprehensive insights into the progression of experiments.
+
+![Alt text](runs.png)
+
+The DAG Visualizer in ZenML offers a clear and visual representation of the workflow, aiding in understanding the dependencies and sequence of tasks.
+
+![Alt text](1.png)
+![Alt text](2.png)
+![Alt text](3.png)
+
+#### MLflow Artifacts
+
+The artifacts of our MLflow models are accessible, showcasing key components and details associated with each model.
+![Alt text](MLflow.png)
+For effective communication within our team, we rely on Discord as our primary platform, allowing seamless and real-time interaction. 
+
+
+![Alt text](Discord.png)
+Notion serves as our go-to tool for creating a structured timeline and tracking various project-related tasks. In our four-member team, each member plays a crucial role. 
+
+![Alt text](Role.png)
+![Alt text](Timeline.png)
 
 This combination of Discord for communication and Notion for project organization ensured a smooth collaborative environment, keeping everyone informed and organized throughout the development process.
