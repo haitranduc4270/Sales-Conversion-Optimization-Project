@@ -106,3 +106,7 @@ Notion serves as our go-to tool for creating a structured timeline and tracking 
 ![Alt text](Timeline.png)
 
 This combination of Discord for communication and Notion for project organization ensured a smooth collaborative environment, keeping everyone informed and organized throughout the development process.
+## Streamlit Integration
+
+For our project, we've integrated Streamlit, a powerful Python library, to enhance the user experience in predicting model outcomes. Streamlit simplifies the process of turning data scripts into shareable web applications. With its user-friendly interface and rapid prototyping capabilities, we've created an interactive and intuitive app that allows users to easily input data and obtain predictions from our machine learning models. This integration adds a user-friendly layer to our project, making it accessible to both technical and non-technical stakeholders.
+![Alt text](image.png)
