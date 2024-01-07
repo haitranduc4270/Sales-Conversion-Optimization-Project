@@ -1,94 +1,112 @@
-# Sales-Conversion-Optimization-Project
+# Sales Conversion Optimization Project
 
-## Overview
+## Project Description
 
-**Problem statement**: This project aims to optimize sales conversions for an anonymous organization's social media ad campaign.We will be using the [Sales Conversion Optimization](https://www.kaggle.com/datasets/loveall/clicks-conversion-tracking/data) dataset.This dataset includes 1143 observations of social media ad campaings and for each observation 11 columns are present.colums are ad_id, xyz_campaign_id, fb_campaign_id, age, gender, interest, Impressions, Clicks, Spent, Total conversion and Approved conversion.Our amis is to predict the total number of Approved conversion while other information about ad_campaings is given.
+### Overview
 
-### ZenML Framework Integration
-ZenML is employed to streamline the development and deployment of machine learning pipelines. It provides a framework, template, and seamless integration with MLflow for efficient tracking and deployment. By using ZenML, the project aims to offer a flexible and powerful solution for businesses to build and deploy machine learning models.
+The objective of this project was to automate sales conversions for an anonymous organization's social media advertising campaign. The goal is to optimize transformations using a structured pipeline and predictive models.
+
+### 1. Data Exploration and Preprocessing
+
+#### Data Description
+
+The dataset, [conversion_data.csv](https://www.kaggle.com/datasets/loveall/clicks-conversion-tracking/data), includes 1143 observations across 11 variables, detailed as follows:
+
+- ad_id: Unique ID for each ad.
+- xyz_campaign_id: ID associated with each ad campaign of XYZ company.
+- fb_campaign_id: ID for how Facebook tracks each campaign.
+- age: Age of the person to whom the ad is shown.
+- gender: Gender of the person to whom the ad is shown.
+- interest: Code specifying the category of the person’s interests (based on Facebook profile).
+- Impressions: Number of times the ad was shown.
+- Clicks: Number of clicks on the ad.
+- Spent: Amount paid by company XYZ to Facebook for the ad.
+- Total conversion: Total number of inquiries about the product after seeing the ad.
+- Approved conversion: Total number of product purchases after seeing the ad.
+![!\[Alt text\](DE.png)](images/DE.png)
 
 
-## :snake: Python Requirements
+#### Data Cleaning and Preprocessing
 
-Let's jump into the Python packages you need. Within the Python environment of your choice, run:
+Cleaned and preprocessed the dataset for analysis, identifying and handling missing or inconsistent data. 
+However the data contanin 0 duplicate value. Then we checked the outliears 
+![!\[Alt text\](outL.png)](images/outL.png)
 
-```bash
-git clone https://github.com/Dhrubaraj-Roy/Sales-Conversion-Optimization-Project.git
-cd Sales-Conversion-Optimization-Project
-pip install -r requirements.txt
+Used the Facade design pattern for data preprocessing:
+We used our favorite design pattern to match the coding style of our teammate and the pattern is the Facade design pattern.
+```python
+# Facade design pattern for data preprocessing
+class DataPreProcessStrategy(DataStrategy):
+    # ... (Code snippet provided in the document)
+
+class DataDivideStrategy(DataStrategy):
+    # ... (Code snippet provided in the document)
+
+class DataCleaning:
+    # ... (Code snippet provided in the document)
 ```
 
-Starting with ZenML 0.20.0, ZenML comes bundled with a React-based dashboard. This dashboard allows you
-to observe your stacks, stack components and pipeline DAGs in a dashboard interface. To access this, you need to [launch the ZenML Server and Dashboard locally](https://docs.zenml.io/user-guide/starter-guide#explore-the-dashboard), but first you must install the optional dependencies for the ZenML server:
+### 2. Exploratory Data Analysis (EDA)
 
-```bash
-pip install zenml["server"]
-zenml up
-```
-
-If you are running the `run_deployment.py` script, you will also need to install some integrations using ZenML:
-
-```bash
-zenml integration install mlflow -y
-```
-
-The project can only be executed with a ZenML stack that has an MLflow experiment tracker and model deployer as a component. Configuring a new stack with the two components are as follows:
-
-```bash
-zenml integration install mlflow -y
-zenml experiment-tracker register mlflow_tracker --flavor=mlflow
-zenml model-deployer register mlflow --flavor=mlflow
-zenml stack register mlflow_stack -a default -o default -d mlflow -e mlflow_tracker --set
-```
-
-## :thumbsup: The Solution
-In order to build a real-world workflow for predicting the Aprroved Conversion on the ad_campaign (which will help make better decisions), it is not enough to just train the model once.
-
-Instead, we are building an end-to-end pipeline for continuously predicting and deploying the machine learning model, alongside a data application that utilizes the latest deployed model for the business to consume.
-
-This pipeline can be deployed to the cloud, scale up according to our needs, and ensure that we track the parameters and data that flow through every pipeline that runs. It includes raw data input, features, results, the machine learning model and model parameters, and prediction outputs. ZenML helps us to build such a pipeline in a simple, yet powerful, way.
-
-In this Project, we give special consideration to the [MLflow integration](https://github.com/zenml-io/zenml/tree/main/examples) of ZenML. In particular, we utilize MLflow tracking to track our metrics and parameters, and MLflow deployment to deploy our model. 
+Performed statistical analysis to understand distributions and relationships, visualized key metrics, and trends in the data. Various exploratory data analysis techniques were employed, including Box plot, Pair plot, and Correlation Matrix heatmap.
+![!\[Alt text\](BOx.png)](images/BOx.png)
+![!\[Alt text\](PAIR.png)](images/PAIR.png)
+![!\[Alt text\](HEAT.png)](images/HEAT.png)
 
 
-### Training Pipeline
+### 3. Feature Engineering
+
+Implemented feature engineering to create new features that might improve model performance.
+
+### 4. Model Development
+
+Developed machine learning models, including GradientBoostingModel, LinearRegressionModel, AdaBoostRegressorModel, RandomForestRegressorModel, and planned to add more models over time. Evaluated model performance using metrics like R2 Score, RMSE, etc.
+
+### 5. MLOps Integration
+#### Version Control and Collaboration
+
+##### Git and GitHub Integration
+
+We have implemented a robust version control system for our code and data using Git and GitHub. Git facilitates version control, allowing multiple team members to work on the project simultaneously. It effectively tracks changes, making it easy to revert to previous versions if needed. GitHub, serving as a centralized platform, enables seamless collaboration, allowing team members to push, pull, and merge changes. This ensures everyone is consistently working with the latest codebase.
+
+![!\[Alt text\](git.png)](images/git.png)
+![!\[Alt text\](git2.png)](images/git2.png)
+
+The utilization of Git and GitHub not only streamlines collaboration but also enhances version control, providing a centralized platform for project management. This approach ultimately improves the efficiency and organization of our team projects.
+
+### Automated Model Training and Deployment
+
+In our project, we've automated the model development process by leveraging ZenML and MLflow for efficient training and deployment pipelines. ZenML assists in organizing and managing machine learning workflows, simplifying the tracking and reproduction of experiments. MLflow automates model training and deployment steps, ensuring a seamless and efficient pipeline.
+
+This setup allows us to experiment with different models, track their performance, and effortlessly deploy the best-performing ones. The integration of ZenML and MLflow has significantly simplified our workflow, making it more manageable and reproducible for future iterations of our project.
+
+#### ZenML Dashboard and Visualizer
+
+Here you can view all our runs in the ZenML Dashboard, providing comprehensive insights into the progression of experiments.
+
+![!\[Alt text\](runs.png)](images/runs.png)
+
+The DAG Visualizer in ZenML offers a clear and visual representation of the workflow, aiding in understanding the dependencies and sequence of tasks.
+
+![!\[Alt text\](1.png)](images/1.png)
+![!\[Alt text\](2.png)](images/2.png)
+![!\[Alt text\](3.png)](images/3.png)
+
+#### MLflow Artifacts
+
+The artifacts of our MLflow models are accessible, showcasing key components and details associated with each model.
+![!\[Alt text\](MLflow.png)](images/MLflow.png)
+For effective communication within our team, we rely on Discord as our primary platform, allowing seamless and real-time interaction. 
 
 
-Our standard training pipeline consists of several steps:
+![!\[Alt text\](Discord.png)](images/Discord.png)
+Notion serves as our go-to tool for creating a structured timeline and tracking various project-related tasks. In our four-member team, each member plays a crucial role. 
 
-- `ingest_data`: This step will ingest the data and create a `DataFrame`.
-- `clean_data`: This step will clean the data and remove the unwanted columns.
-- `train_model`: This step will train the model and save the model using [MLflow autologging](https://www.mlflow.org/docs/latest/tracking.html).
-- `evaluation`: This step will evaluate the model and save the metrics -- using MLflow autologging -- into the artifact store
+![!\[Alt text\](Role.png)](images/Role.png)
+![!\[Alt text\](Timeline.png)](images/Timeline.png)
 
-### Deployment Pipeline
+This combination of Discord for communication and Notion for project organization ensured a smooth collaborative environment, keeping everyone informed and organized throughout the development process.
+## Streamlit Integration
 
-We have another pipeline, the `deployment_pipeline.py`, that extends the training pipeline, and implements a continuous deployment workflow. It ingests and processes input data, trains a model and then (re)deploys the prediction server that serves the model if it meets our evaluation criteria. The criteria that we have chosen is a configurable threshold on the [R2_Score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html) of the model. The first four steps of the pipeline are the same as above, but we have added the following additional ones:
-
-- `deployment_trigger`: The step checks whether the newly trained model meets the criteria set for deployment.
-- `model_deployer`: This step deploys the model as a service using MLflow (if deployment criteria is met).
-
-In the deployment pipeline, ZenML's MLflow tracking integration is used for logging the hyperparameter values and the trained model itself and the model evaluation metrics -- as MLflow experiment tracking artifacts -- into the local MLflow backend. This pipeline also launches a local MLflow deployment server to serve the latest MLflow model if its accuracy is above a configured threshold.
-
-The MLflow deployment server runs locally as a daemon process that will continue to run in the background after the example execution is complete. When a new pipeline is run which produces a model that passes the accuracy threshold validation, the pipeline automatically updates the currently running MLflow deployment server to serve the new model instead of the old one.
-
-
-While this ZenML Project trains and deploys a model locally, other ZenML integrations such as the [Seldon](https://github.com/zenml-io/zenml/tree/main/examples/seldon_deployment) deployer can also be used in a similar manner to deploy the model in a more production setting (such as on a Kubernetes cluster). We use MLflow here for the convenience of its local deployment.
-
-![training_and_deployment_pipeline](_assets/training_and_deployment_pipeline_updated.png)
-
-## :notebook: Diving into the code
-
-You can run two pipelines as follows:
-
-- Training pipeline:
-
-```bash
-python run_pipeline.py
-```
-
-- The continuous deployment pipeline:
-
-```bash
-python run_deployment.py
-```
+For our project, we've integrated Streamlit, a powerful Python library, to enhance the user experience in predicting model outcomes. Streamlit simplifies the process of turning data scripts into shareable web applications. With its user-friendly interface and rapid prototyping capabilities, we've created an interactive and intuitive app that allows users to easily input data and obtain predictions from our machine learning models. This integration adds a user-friendly layer to our project, making it accessible to both technical and non-technical stakeholders.
+![!\[Alt text\](image.png)](images/image.png)
