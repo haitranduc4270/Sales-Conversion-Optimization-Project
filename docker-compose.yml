@@ -1,0 +1,45 @@
+version: '3'
+services:
+  # notebook:
+  #   image: jupyter/pyspark-notebook
+  #   container_name: pyspark-notebook
+  #   ports:
+  #     - "8888:8888"
+  #   volumes:
+  #     - ../Sales-Conversion-Optimization-Project:/home/jovyan/work
+  #   # environment:
+  #   #   - SPARK_OPTS=--driver-java-options=-Dhive.metastore.uris=thrift://hive-metastore:9083
+  #   #   - PYSPARK_SUBMIT_ARGS="--master local[*] pyspark-shell"
+  #   networks:
+  #     - spark-network
+
+  # postgres:
+  #   image: postgres:latest
+  #   container_name: my-postgres
+  #   environment:
+  #     POSTGRES_USER: myuser
+  #     POSTGRES_PASSWORD: mypassword
+  #     POSTGRES_DB: mydatabase
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - my-postgres-data:/var/lib/postgresql/data
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+
+
+volumes:
+  my-postgres-data:
+
+networks:
+  spark-network:
+    driver: bridge
